@@ -20,9 +20,10 @@ from env import github_token, github_username
 # TODO: Add your github username to your env.py file under the variable `github_username`
 # TODO: Add more repositories to the `REPOS` list below.
 
-REPOS = []
- 
-
+# Load the REPOS list from the JSON file
+with open('repo_names.json', 'r') as file:
+    REPOS = json.load(file)
+#REPOS =[]
 headers = {"Authorization": f"token {github_token}", "User-Agent": github_username}
 
 if headers["Authorization"] == "token " or headers["User-Agent"] == "":
