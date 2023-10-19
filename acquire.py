@@ -11,8 +11,6 @@ import json
 from typing import Dict, List, Optional, Union, cast
 import requests
 
-from scrape import scrape_github_repos
-
 from env import github_token, github_username
 
 # TODO: Make a github personal access token.
@@ -23,7 +21,7 @@ from env import github_token, github_username
 # TODO: Add more repositories to the `REPOS` list below.
 
 # Load the REPOS list from the JSON file
-with open(file_name, 'r') as file:
+with open('repo_names.json', 'r') as file:
     REPOS = json.load(file)
 
 headers = {"Authorization": f"token {github_token}", "User-Agent": github_username}
