@@ -20,9 +20,12 @@ from env import github_token, github_username
 # TODO: Add your github username to your env.py file under the variable `github_username`
 # TODO: Add more repositories to the `REPOS` list below.
 
-REPOS = []
- 
+# Load the REPOS list from the JSON file
+with open('repo_names.json', 'r') as file:
+    REPOS = json.load(file)
 
+# REPOS = REPOS[:29]
+# REPOS =[]
 headers = {"Authorization": f"token {github_token}", "User-Agent": github_username}
 
 if headers["Authorization"] == "token " or headers["User-Agent"] == "":
@@ -81,7 +84,10 @@ def process_repo(repo: str) -> Dict[str, str]:
     dictionary with the language of the repo and the readme contents.
     """
     contents = get_repo_contents(repo)
-    readme_contents = requests.get(get_readme_download_url(contents)).text
+    try:
+        readme_contents = requests.get(get_readme_download_url(contents)).text
+    except:
+        readme_contents = 'FailToLoadReadME'
     return {
         "repo": repo,
         "language": get_repo_language(repo),
