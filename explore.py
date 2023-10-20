@@ -10,3 +10,10 @@ def show_counts_and_ratios(df, column):
     labels.columns = ['n', 'percent']
     labels
     return labels
+
+# Define a modified categorization function
+def categorize_language(language, languages):
+    if language in languages:
+        return language
+    else:
+        return 'Other'

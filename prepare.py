@@ -101,13 +101,13 @@ def process_dataframe(df, extra_words= [], exclude_words= []):
     # Apply the basic_clean function to 'original', then tokenize the result, and remove stopwords
     df['clean'] = df['original'].apply(basic_clean).apply(tokenize).apply(remove_stopwords)
     
-    df['remove_stopwords'] = df['original'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
+    df['remove_stopwords'] = df['clean'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
     
     # Apply the stem function to 'clean' column
-    df['stemmed'] = df['clean'].apply(stem)
+    df['stemmed'] = df['remove_stopwords'].apply(stem)
     
     # Apply the lemmatize function to 'clean' column
-    df['lemmatized'] = df['clean'].apply(lemmatize)
+    df['lemmatized'] = df['remove_stopwords'].apply(lemmatize)
     
     # Drop the 'content' column from the dataframe
     df = df.drop(columns='readme_contents', axis=1)
