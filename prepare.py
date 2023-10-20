@@ -20,7 +20,7 @@ def basic_clean(data):
         .decode('utf-8', 'ignore')
     
     # Remove any characters that are not lowercase letters, numbers, apostrophes, or whitespaces
-    data = re.sub(r"[^a-z0-9'\s]", "", data)
+    data = re.sub(r"[^a-z0-9\s]", "", data)
     
     # Return the cleaned data
     return data
@@ -33,6 +33,10 @@ def tokenize(data):
     # Tokenize the input data using the tokenizer object
     data = tokenizer.tokenize(data, return_str=True)
 
+    data = re.sub(r"[^a-z0-9\s]", "", data)
+
+    data = re.sub(r"\s\d{1}\s", "", data)
+    
     # Return the processed data
     return data
 
@@ -99,7 +103,7 @@ def process_dataframe(df, extra_words= [], exclude_words= []):
     df['original'] = df['readme_contents']
     
     # Apply the basic_clean function to 'original', then tokenize the result, and remove stopwords
-    df['clean'] = df['original'].apply(basic_clean).apply(tokenize).apply(remove_stopwords)
+    df['clean'] = df['original'].apply(basic_clean).apply(tokenize)
     
     df['remove_stopwords'] = df['clean'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
     
