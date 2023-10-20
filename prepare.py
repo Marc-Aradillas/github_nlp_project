@@ -13,6 +13,9 @@ import pandas as pd
 
 # defined function to accomplish basic clean actions on text data.
 def basic_clean(text_data):
+    
+    if text_data is None:
+        return ""  # Handle the case where text_data is None
         
     text_data = unicodedata.normalize('NFKD', text_data)\
         .encode('ascii', 'ignore')\
@@ -31,6 +34,10 @@ def tokenize(text_data):
     
     text_data = tokenizer.tokenize(text_data, return_str=True)
 
+    text_data = re.sub(r"[^a-z0-9\s]", "", text_data)
+
+    text_data = re.sub(r"\s\d{1}\s", "", text_data)
+    
     return text_data
 
 
@@ -96,7 +103,7 @@ def clean(string, extra_stopwords):
 
 # defined function to accomplish preparation of text data
 def prep_text_data(df, column, extra_words=[], exclude_words=[]):
-    df['clean'] = df[column].apply(basic_clean)\
+    df['clean_readme'] = df[column].apply(basic_clean)\
                             .apply(tokenize)\
                             .apply(remove_stopwords,
                                   extra_words=extra_words,
