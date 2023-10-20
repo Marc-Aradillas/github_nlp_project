@@ -1,116 +1,111 @@
-import pandas as pd
-
+# imported libraries 
 import unicodedata
 import re
+import json
 
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
 
-nltk.download('wordnet')
+import pandas as pd
 
 
-def basic_clean(data):
-    # Convert the text to lowercase
-    data = data.lower()
-    
-    # Normalize the text by removing any diacritical marks
-    data = unicodedata.normalize('NFKD', data)\
+
+# defined function to accomplish basic clean actions on text data.
+def basic_clean(text_data):
+        
+    text_data = unicodedata.normalize('NFKD', text_data)\
         .encode('ascii', 'ignore')\
         .decode('utf-8', 'ignore')
+
+    text_data = re.sub(r'[^a-z0-9\s]', '', text_data).lower()
+
+    return text_data
+
+
+
+# defined function to apply tokenizer object onto text dat and return data as str values.
+def tokenize(text_data):
     
-    # Remove any characters that are not lowercase letters, numbers, apostrophes, or whitespaces
-    data = re.sub(r"[^a-z0-9'\s]", "", data)
+    tokenizer = nltk.tokenize.ToktokTokenizer()
     
-    # Return the cleaned data
-    return data
+    text_data = tokenizer.tokenize(text_data, return_str=True)
+
+    return text_data
 
 
-def tokenize(data):
-    # Initialize a tokenizer object
-    tokenizer = ToktokTokenizer()
 
-    # Tokenize the input data using the tokenizer object
-    data = tokenizer.tokenize(data, return_str=True)
-
-    # Return the processed data
-    return data
-
-
-def stem(data):
-    # Create an instance of the PorterStemmer class from the nltk library
+# defined function used to stem text in data and joins them with spaces as a string value
+def stem(text_data):
+    
     ps = nltk.porter.PorterStemmer()
-    # Create a list of words form data
-    words = data.split()
-    # Apply stemming to each word in the input data
-    stems = [ps.stem(word) for word in words]
 
-    # Join the stemmed words into a single string with spaces in between
-    stemmed_data = ' '.join(stems)
-
-    # Return the stemmed data
-    return stemmed_data
+    stems = [ps.stem(word) for word in text_data.split()]
+    
+    text_data_stemmed = ' '.join(stems)
+    
+    return text_data_stemmed 
 
 
-def lemmatize(data):
-    # Create an instance of WordNetLemmatizer
+
+
+# defined function to lemmatize text in data and return the text as a string in a sentence with "lemmas"
+def lemmatize(text_data):
+
     wnl = nltk.stem.WordNetLemmatizer()
+
+    lemmas = [wnl.lemmatize(word) for word in text_data.split()]
     
-    # Create a list of words form data
-    words = data.split()
-    
-    # Lemmatize each word in the input data
-    lemmas = [wnl.lemmatize(word) for word in words]
+    text_data_lemmatized = ' '.join(lemmas)
 
-    # Join the lemmatized words into a single string
-    lemmatized_data = ' '.join(lemmas)
-
-    # Return the lemmatized data
-    return lemmatized_data
+    return text_data_lemmatized
 
 
 
-def remove_stopwords(data, extra_words= [], exclude_words= []):
-    # Create a list of stopwords in English
+def remove_stopwords(text_data, extra_words=None, exclude_words=None):
+    # stopwords list
     stopwords_list = stopwords.words('english')
 
-    # Extend the stopwords_list with the elements from the extra_words list
-    stopwords_list.extend(extra_words)
+    # If extra_words are provided, add them to the stopwords_list
+    if extra_words:
+        stopwords_list.extend(extra_words)
 
-    # Iterate over each word in the exclude_words list
-    for word in exclude_words:
-        # Check if the word exists in the stopwords_list
-        if word in stopwords_list:
-            # Remove the word from the stopwords_list
-            stopwords_list.remove(word)
+    # If exclude_words are provided, remove them from the stopwords_list
+    if exclude_words:
+        stopwords_list = [word for word in stopwords_list if word not in exclude_words]
 
-    # Split the data into individual words and filter out stopwords
-    words = [word for word in data.split() if word not in stopwords_list]
-    
-    # Join the filtered words back into a string
-    data = ' '.join(words)
-    
-    # Return the processed data
-    return data
+    # Tokenize the text data and remove stopwords
+    words = [word for word in text_data.split() if word not in stopwords_list]
 
-# Function to apply cleaning and processing functions from prepare.py
-def process_dataframe(df, extra_words= [], exclude_words= []):
-    # Create a new column 'original' and assign the values from 'content'
-    df['original'] = df['readme_contents']
+    # Join the words back 
+    new_text_data = ' '.join(words)
+
+    return new_text_data
+
+# extra_words = ["framework", "with"]
+# exclude_words = ["can"]
+
+# result = remove_stopwords(data, extra_words, exclude_words)
+# print(result)
+
+
+def clean(string, extra_stopwords):    
+    words = remove_stopwords((tokenize(basic_clean(string))), extra_stopwords)
+    return words
+
+
+# defined function to accomplish preparation of text data
+def prep_text_data(df, column, extra_words=[], exclude_words=[]):
+    df['clean'] = df[column].apply(basic_clean)\
+                            .apply(tokenize)\
+                            .apply(remove_stopwords,
+                                  extra_words=extra_words,
+                                  exclude_words=exclude_words)
     
-    # Apply the basic_clean function to 'original', then tokenize the result, and remove stopwords
-    df['clean'] = df['original'].apply(basic_clean).apply(tokenize).apply(remove_stopwords)
-    
-    df['remove_stopwords'] = df['original'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
-    
-    # Apply the stem function to 'clean' column
     df['stemmed'] = df['clean'].apply(stem)
     
-    # Apply the lemmatize function to 'clean' column
     df['lemmatized'] = df['clean'].apply(lemmatize)
     
-    # Drop the 'content' column from the dataframe
-    df = df.drop(columns='readme_contents', axis=1)
-    
-    # Return the modified dataframe
-    return df
+    return df[['repo', column,'clean', 'stemmed', 'lemmatized']]
+
+# prep_text_data(news_df, 'original', extra_words = ['ha'], exclude_words = ['no']).head()
