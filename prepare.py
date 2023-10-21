@@ -17,17 +17,17 @@ import pandas as pd
 
 # defined function to accomplish basic clean actions on text data.
 def basic_clean(text_data):
-
-    test_data = text_data.lower()
     
     if text_data is None:
         return ""  # Handle the case where text_data is None
+
+    test_data = text_data.lower()
         
     text_data = unicodedata.normalize('NFKD', text_data)\
         .encode('ascii', 'ignore')\
         .decode('utf-8', 'ignore')
 
-    text_data = re.sub(r'[^a-z0-9\s]', '', text_data)
+    text_data = re.sub(r'[^a-z0-9\s]', '', text_data).lower()
 
     # Use markdown library to clean 
     text_data = markdown(text_data)
@@ -123,10 +123,10 @@ def prep_text_data(df, column, extra_words=[], exclude_words=[]):
                                   extra_words=extra_words,
                                   exclude_words=exclude_words)
     
-    df['stemmed'] = df['clean'].apply(stem)
+    df['stemmed'] = df['clean_readme'].apply(stem)
     
-    df['lemmatized'] = df['clean'].apply(lemmatize)
+    df['lemmatized'] = df['clean_readme'].apply(lemmatize)
     
-    return df[['repo', column,'clean', 'stemmed', 'lemmatized']]
+    return df[['repo', column,'clean_readme', 'stemmed', 'lemmatized']]
 
 # prep_text_data(news_df, 'original', extra_words = ['ha'], exclude_words = ['no']).head()
