@@ -6,6 +6,10 @@ import json
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
+from markdown import markdown
+from bs4 import BeautifulSoup
+
+
 
 import pandas as pd
 
@@ -13,6 +17,8 @@ import pandas as pd
 
 # defined function to accomplish basic clean actions on text data.
 def basic_clean(text_data):
+
+    test_data = text_data.lower()
     
     if text_data is None:
         return ""  # Handle the case where text_data is None
@@ -21,8 +27,16 @@ def basic_clean(text_data):
         .encode('ascii', 'ignore')\
         .decode('utf-8', 'ignore')
 
-    text_data = re.sub(r'[^a-z0-9\s]', '', text_data).lower()
+    text_data = re.sub(r'[^a-z0-9\s]', '', text_data)
 
+    # Use markdown library to clean 
+    text_data = markdown(text_data)
+
+    # Remove HTML tags
+    soup = BeautifulSoup(text_data, 'html.parser')
+    text_data = soup.get_text()
+    
+    # Return the cleaned data
     return text_data
 
 
