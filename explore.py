@@ -1,6 +1,6 @@
 import pandas as pd
 
-def show_counts_and_ratios(df, column):
+def counts_and_ratios(df, column):
     """
     Takes in a dataframe and a string of a single column
     Returns a dataframe with absolute value counts and percentage value counts
@@ -107,7 +107,7 @@ def freq_to_dataframe(df):
     return cpp_freq_df, python_freq_df, other_freq_df, all_freq_df
 
 
-def freq_df_concat(df):
+def counts_df_concat(df):
     """
     Concatenate multiple DataFrames with word frequency information, separated by empty columns.
 
