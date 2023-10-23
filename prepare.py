@@ -21,7 +21,7 @@ def basic_clean(text_data):
     if text_data is None:
         return ""  # Handle the case where text_data is None
 
-    test_data = text_data.lower()
+    text_data = text_data.lower()
         
     text_data = unicodedata.normalize('NFKD', text_data)\
         .encode('ascii', 'ignore')\
@@ -109,24 +109,36 @@ def remove_stopwords(text_data, extra_words=None, exclude_words=None):
 # result = remove_stopwords(data, extra_words, exclude_words)
 # print(result)
 
+STOPWORDS = ['robots', 'robot', 'robotics']
 
-def clean(string, extra_stopwords):    
-    words = remove_stopwords((tokenize(basic_clean(string))), extra_stopwords)
-    return words
+def clean(text):
+    'A simple function to cleanup text data'
+    wnl = nltk.stem.WordNetLemmatizer()
+    stopwords = nltk.corpus.stopwords.words('english') + STOPWORDS
+    text = (unicodedata.normalize('NFKD', text)
+             .encode('ascii', 'ignore')
+             .decode('utf-8', 'ignore')
+             .lower())
+    words = re.sub(r'[^\w\s]', '', text).split()
+    return [wnl.lemmatize(word) for word in words if word not in stopwords]
+
 
 
 # defined function to accomplish preparation of text data
 def prep_text_data(df, column, extra_words=[], exclude_words=[]):
-    df['clean_readme'] = df[column].apply(basic_clean)\
+    # Create a copy of the DataFrame to avoid modifying the original
+    df_copy = df.copy()
+    
+    # Apply text preparation functions to the specified column
+    df_copy['clean_readme'] = df_copy[column].apply(basic_clean)\
                             .apply(tokenize)\
                             .apply(remove_stopwords,
                                   extra_words=extra_words,
                                   exclude_words=exclude_words)
     
-    df['stemmed'] = df['clean_readme'].apply(stem)
+    df_copy['stemmed'] = df_copy['clean_readme'].apply(stem)
+    df_copy['lemmatized'] = df_copy['clean_readme'].apply(lemmatize)
     
-    df['lemmatized'] = df['clean_readme'].apply(lemmatize)
-    
-    return df[['repo', column,'clean_readme', 'stemmed', 'lemmatized']]
+    return df_copy
 
 # prep_text_data(news_df, 'original', extra_words = ['ha'], exclude_words = ['no']).head()
