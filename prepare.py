@@ -71,15 +71,15 @@ def stem(text_data):
 
 
 # defined function to lemmatize text in data and return the text as a string in a sentence with "lemmas"
-def lemmatize(text_data):
+def lemmatize(string):
 
     wnl = nltk.stem.WordNetLemmatizer()
 
-    lemmas = [wnl.lemmatize(word) for word in text_data.split()]
+    lemmas = [wnl.lemmatize(word) for word in string.split()]
     
-    text_data_lemmatized = ' '.join(lemmas)
+    string = ' '.join(lemmas)
 
-    return text_data_lemmatized
+    return string
 
 
 
