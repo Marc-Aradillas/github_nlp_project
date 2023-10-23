@@ -109,7 +109,7 @@ def remove_stopwords(text_data, extra_words=None, exclude_words=None):
 # result = remove_stopwords(data, extra_words, exclude_words)
 # print(result)
 
-STOPWORDS = ['robots', 'robot', 'robotics']
+STOPWORDS = ['ro']
 
 def clean(text):
     'A simple function to cleanup text data'
