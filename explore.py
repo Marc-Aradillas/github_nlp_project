@@ -1,4 +1,5 @@
 import pandas as pd
+import nltk
 
 def counts_and_ratios(df, column):
     """
@@ -78,10 +79,10 @@ def word_freq(df):
     cpp_words, python_words, other_words, all_words = list_words(df)
 
     # Calculate word frequencies and sort in descending order
-    c_freq = pd.Series(cpp_words).value_counts().sort_values(ascending=False)
-    python_freq = pd.Series(python_words).value_counts().sort_values(ascending=False)
-    other_freq = pd.Series(other_words).value_counts().sort_values(ascending=False)
-    all_freq = pd.Series(all_words).value_counts().sort_values(ascending=False)
+    c_freq = pd.Series(cpp_words).value_counts().sort_values(ascending=False).astype(int)
+    python_freq = pd.Series(python_words).value_counts().sort_values(ascending=False).astype(int)
+    other_freq = pd.Series(other_words).value_counts().sort_values(ascending=False).astype(int)
+    all_freq = pd.Series(all_words).value_counts().sort_values(ascending=False).astype(int)
     
     return c_freq, python_freq, other_freq, all_freq
 
@@ -168,3 +169,31 @@ def word_counts(df, reset_index=True):
         word_counts = word_counts[['word', 'all', 'C++', 'Python', 'Other']]
 
     return word_counts
+
+
+def get_top_n_bigrams(series, num_words, top_n, remove_delimiter=False):
+    """
+    Get the top N bigrams from a Series of text data.
+
+    Parameters:
+    series (Series): A Series containing text data.
+    num_words (int): The number of words to consider for creating bigrams.
+    top_n (int): The number of top bigrams to retrieve.
+    remove_delimiter (bool): Whether to remove delimiters from the bigrams. Defaults to False.
+
+    Returns:
+    Series: A Series with the top N bigrams and their counts.
+    """
+    # Create bigrams directly from the input series
+    bigrams = list(nltk.ngrams(series, num_words))
+
+    if remove_delimiter:
+        # Remove delimiters from bigrams
+        bigrams = [tuple(word.replace(',', '') for word in bigram) for bigram in bigrams]
+
+    # Create a Series of bigram counts and retrieve the top N bigrams
+    top_bigrams = (pd.Series(bigrams)
+                   .value_counts()
+                   .head(top_n))
+
+    return top_bigrams

@@ -164,3 +164,5 @@ def calculate_ratios(df, min_count_cpp=100, min_count_python=100, min_count_othe
     selected_word_counts = sorted_word_counts.pipe(lambda df: pd.concat([df.head(), df.tail()]))
 
     return selected_word_counts
+
+
