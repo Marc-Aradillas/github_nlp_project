@@ -28,13 +28,13 @@ def basic_clean(data):
     # Convert the text to lowercase
     data = data.lower()
     
+    # Remove URLs using regular expression
+    data = re.sub(r"http\S+|www\S+", "", data)
+    
     # Normalize the text by removing any diacritical marks
     data = unicodedata.normalize('NFKD', data)\
         .encode('ascii', 'ignore')\
         .decode('utf-8', 'ignore')
-    
-    # Remove any characters that are not lowercase letters, numbers, apostrophes, or whitespaces
-    data = re.sub(r"[^a-z0-9\s']", "", data)
 
     # Use markdown library to clean 
     data = markdown(data)
@@ -43,6 +43,15 @@ def basic_clean(data):
     soup = BeautifulSoup(data, 'html.parser')
     data = soup.get_text()
     
+    # # Remove any characters that are not lowercase letters, numbers, apostrophes, or whitespaces
+    # data = re.sub(r"[^a-z0-9\s']", "", data)
+
+    # Define a regular expression pattern to remove unwanted characters but preserve "C++"
+    pattern = r"[^a-zA-Z0-9\s'\+]|(?<!\w)C\+\+(?!\w)"
+
+    # Use the regular expression pattern to remove unwanted characters
+    data = re.sub(pattern, "", data)
+
     # Return the cleaned data
     return data
 
@@ -181,8 +190,8 @@ def preprocess_readme_column(df, extra_words=[], exclude_words=[], method='stem'
     # Drop the 'readme_contents' column
     df.drop(columns='readme_contents', axis=1, inplace=True)
     
-    # Apply stopwords removal and text processing based on the selected method
-    df['readme'] = df['readme'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
+    # # Apply stopwords removal and text processing based on the selected method
+    # df['readme'] = df['readme'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
     
     if method == 'stem':
         # Apply stemming to the 'readme' column
@@ -190,6 +199,9 @@ def preprocess_readme_column(df, extra_words=[], exclude_words=[], method='stem'
     elif method == 'lemmatize':
         # Apply lemmatization to the 'readme' column
         df['readme'] = df['readme'].apply(lemmatize)
+    
+    # Apply stopwords removal and text processing based on the selected method
+    df['readme'] = df['readme'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
 
 def remove_invalid_rows(df):
     """
@@ -259,11 +271,11 @@ def process_dataframe(df, extra_words=[], exclude_words=[], method='stem', label
     # Remove rows with invalid data
     remove_invalid_rows(df)
     
-    # Categorize the 'language' column based on labeled_languages
-    df['language'] = df['language'].apply(categorize_language, args=(labeled_languages,))
-    
     # Remove rows with non-language items
     df = remove_non_languages(df, non_languages)
+    
+    # Categorize the 'language' column based on labeled_languages
+    df.loc[:, 'language'] = df['language'].apply(categorize_language, args=(labeled_languages,))
     
     return df
 

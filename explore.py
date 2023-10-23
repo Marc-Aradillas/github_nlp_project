@@ -171,29 +171,34 @@ def word_counts(df, reset_index=True):
     return word_counts
 
 
-def get_top_n_bigrams(series, num_words, top_n, remove_delimiter=False):
+
+
+def get_top_n_ngrams(series, num_words, top_n, remove_delimiter=False):
     """
-    Get the top N bigrams from a Series of text data.
+    Get the top N n-grams from a Series of text data.
 
     Parameters:
     series (Series): A Series containing text data.
-    num_words (int): The number of words to consider for creating bigrams.
-    top_n (int): The number of top bigrams to retrieve.
-    remove_delimiter (bool): Whether to remove delimiters from the bigrams. Defaults to False.
+    num_words (int): The number of words to consider for creating n-grams.
+    top_n (int): The number of top n-grams to retrieve.
+    remove_delimiter (bool): Whether to remove delimiters from the n-grams. Defaults to False.
 
     Returns:
-    Series: A Series with the top N bigrams and their counts.
+    Series: A Series with the top N n-grams and their counts.
     """
-    # Create bigrams directly from the input series
-    bigrams = list(nltk.ngrams(series, num_words))
+    # Create n-grams directly from the input series
+    ngrams = list(nltk.ngrams(series, num_words))
 
     if remove_delimiter:
-        # Remove delimiters from bigrams
-        bigrams = [tuple(word.replace(',', '') for word in bigram) for bigram in bigrams]
+        # Remove delimiters from n-grams by joining without commas
+        ngrams = [tuple(" ".join(word.split(",")) for word in ngram) for ngram in ngrams]
 
-    # Create a Series of bigram counts and retrieve the top N bigrams
-    top_bigrams = (pd.Series(bigrams)
-                   .value_counts()
-                   .head(top_n))
+    # Create a Series of n-gram counts and retrieve the top N n-grams
+    top_ngrams = (pd.Series(ngrams)
+                  .value_counts()
+                  .head(top_n))
 
-    return top_bigrams
+    # Display n-grams without commas
+    top_ngrams.index = [' '.join(ngram) for ngram in top_ngrams.index]
+
+    return top_ngrams

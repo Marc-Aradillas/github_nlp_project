@@ -166,3 +166,44 @@ def calculate_ratios(df, min_count_cpp=100, min_count_python=100, min_count_othe
     return selected_word_counts
 
 
+
+def plot_ngrams(word_counts, top_n=20, figsize=(12, 10), title=None):
+    """
+    Plots a horizontal bar chart of the top N words in a Series.
+
+    Parameters:
+    word_counts (Series): A Series containing word counts.
+    top_n (int): The number of top records to plot. Defaults to 20.
+    figsize (tuple): Width, height in inches. Defaults to (12, 10).
+    title (str): The title of the plot. If None, a default title will be generated. Defaults to None.
+    """
+    # Check if the input is a pandas Series
+    if not isinstance(word_counts, pd.Series):
+        raise TypeError("word_counts must be a pandas Series")
+    
+    # Select the top N words and sort them
+    top_words = word_counts.nlargest(top_n).sort_values(ascending=True)
+
+    # Create a bar chart
+    ax = top_words.plot(kind='barh', figsize=figsize)
+
+    # Set plot title with larger font size
+    if title is None:  # Check if a custom title is provided
+        title = f'Top {top_n} Words'
+    
+    plt.title(title, fontsize=16)
+
+    # Remove the box, x axis, and y tick marks
+    for spine in plt.gca().spines.values():
+        spine.set_visible(False)
+    plt.xticks([])  # Remove x ticks
+    plt.yticks(fontsize=14)  # Keep y labels but increase font size
+    plt.gca().tick_params(left=False)  # Remove y ticks
+
+    # Add counts at the end of each bar
+    for i, v in enumerate(top_words):
+        ax.text(v + 3, i, str(v), color='black', va='center') #, fontweight='bold')
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
