@@ -248,6 +248,10 @@ def categorize_language(language, labeled_languages):
         return language
     else:
         return 'Other'
+    
+
+def add_bigrams(data):
+    data.str.split(expand=True).stack()
 
 
 def process_dataframe(df, extra_words=[], exclude_words=[], method='stem', labeled_languages=[], non_languages=[]):
