@@ -202,6 +202,8 @@ def preprocess_readme_column(df, extra_words=[], exclude_words=[], method='stem'
     
     # Apply stopwords removal and text processing based on the selected method
     df['readme'] = df['readme'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
+    
+    return df
 
 def remove_invalid_rows(df):
     """
@@ -218,6 +220,8 @@ def remove_invalid_rows(df):
     
     # Remove rows where 'readme' is 'failtoloadreadme'
     df = df[df['readme'] != 'failtoloadreadme']
+    
+    return df
 
 
 def remove_non_languages(df, non_languages):
@@ -270,16 +274,17 @@ def process_dataframe(df, extra_words=[], exclude_words=[], method='stem', label
         pd.DataFrame: The processed DataFrame with rows removed based on non-language items.
     """
     # Preprocess the 'readme' column
-    preprocess_readme_column(df, extra_words, exclude_words, method)
+    df = preprocess_readme_column(df, extra_words, exclude_words, method)
     
     # Remove rows with invalid data
-    remove_invalid_rows(df)
+    df = remove_invalid_rows(df)
     
     # Remove rows with non-language items
     df = remove_non_languages(df, non_languages)
     
     # Categorize the 'language' column based on labeled_languages
-    df.loc[:, 'language'] = df['language'].apply(categorize_language, args=(labeled_languages,))
+    df['language'] = df['language'].apply(categorize_language, args=(labeled_languages,))
+    
+    df = df[df['readme'].notna() & df['readme'].str.contains(' ')]
     
     return df
-
