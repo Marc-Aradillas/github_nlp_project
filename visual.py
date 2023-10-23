@@ -224,24 +224,34 @@ def plot_language_distribution(df):
     plt.figure(figsize=(10, 6))
     
     # Create a bar chart with 'n' values
-    plt.bar(df.index, df['n'])#, color='#1f77b4', edgecolor='black')
+    bars = plt.bar(df.index, df['n'], color='#1f77b4', edgecolor='black')
     
     # Set labels and title
     plt.xlabel('Programming Language', labelpad=20)
-    plt.ylabel('Count')
     plt.title('Distribution of Programming Languages', pad=20)
     
-    # You can format the y-axis to display larger numbers in a more readable format if needed
-    # For instance, here we're using a FuncFormatter to format larger numbers with 'k', 'M', etc.
-    plt.gca().yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, p: format(int(x), ',')))
-    
-    # Remove the top and right spines for a cleaner appearance
+    # Get the current axes
     ax = plt.gca()
+    
+    # Remove the top, right, and left spines for a cleaner appearance
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)  # This line removes the y-axis.
+    
+    # Hide the y-axis labels
+    ax.yaxis.set_visible(False)
+    
+    # Remove tick marks on the x-axis
+    ax.tick_params(axis='x', length=0)  # This line removes the tick marks but keeps the labels.
+    
+    # Add values on top of the bars
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height + 0.1, int(height),
+                ha='center', va='bottom')
     
     # Rotates the x-axis labels for better readability, depending on the number of categories
-    plt.xticks(rotation=45, ha="right", rotation_mode="anchor")  # 'ha' is short for 'horizontal alignment'
+    plt.xticks(rotation=0, ha="right", rotation_mode="anchor")  # 'ha' is short for 'horizontal alignment'
     
     plt.tight_layout()
     
