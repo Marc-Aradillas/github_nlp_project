@@ -1,144 +1,290 @@
-# imported libraries 
+import pandas as pd
 import unicodedata
 import re
-import json
+from bs4 import BeautifulSoup
 
 import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
+nltk.download('wordnet')
+
 from markdown import markdown
-from bs4 import BeautifulSoup
 
 
+def basic_clean(data):
+    """
+    Perform basic text cleaning operations on the input data.
 
-import pandas as pd
+    Args:
+        data (str): The input text data to be cleaned.
 
-
-
-# defined function to accomplish basic clean actions on text data.
-def basic_clean(text_data):
+    Returns:
+        str: The cleaned text data after applying the following operations:
+             - Convert text to lowercase.
+             - Normalize text by removing diacritical marks.
+             - Remove characters that are not lowercase letters, numbers, apostrophes, or whitespaces.
+             - Clean HTML content and remove HTML tags.
+    """
+    # Convert the text to lowercase
+    data = data.lower()
     
-    if text_data is None:
-        return ""  # Handle the case where text_data is None
-
-    text_data = text_data.lower()
-        
-    text_data = unicodedata.normalize('NFKD', text_data)\
+    # Remove URLs using regular expression
+    data = re.sub(r"http\S+|www\S+", "", data)
+    
+    # Normalize the text by removing any diacritical marks
+    data = unicodedata.normalize('NFKD', data)\
         .encode('ascii', 'ignore')\
         .decode('utf-8', 'ignore')
 
-    text_data = re.sub(r'[^a-z0-9\s]', '', text_data).lower()
-
     # Use markdown library to clean 
-    text_data = markdown(text_data)
+    data = markdown(data)
 
     # Remove HTML tags
-    soup = BeautifulSoup(text_data, 'html.parser')
-    text_data = soup.get_text()
+    soup = BeautifulSoup(data, 'html.parser')
+    data = soup.get_text()
     
+    # # Remove any characters that are not lowercase letters, numbers, apostrophes, or whitespaces
+    # data = re.sub(r"[^a-z0-9\s']", "", data)
+
+    # Define a regular expression pattern to remove unwanted characters but preserve "C++"
+    pattern = r"[^a-zA-Z0-9\s'\+]|(?<!\w)C\+\+(?!\w)"
+
+    # Use the regular expression pattern to remove unwanted characters
+    data = re.sub(pattern, "", data)
+
     # Return the cleaned data
-    return text_data
+    return data
 
 
+def tokenize(data):
+    """
+    Tokenize the input text data using a tokenizer object and apply additional text processing.
 
-# defined function to apply tokenizer object onto text dat and return data as str values.
-def tokenize(text_data):
+    Args:
+        data (str): The input text data to be tokenized.
+
+    Returns:
+        str: The tokenized and processed text data after performing the following operations:
+             - Tokenization using ToktokTokenizer.
+             - Removing characters that are not lowercase letters, numbers, or whitespaces.
+             - Removing single-digit numbers.
+    """
+    # Initialize a tokenizer object
+    tokenizer = ToktokTokenizer()
+
+    # Tokenize the input data using the tokenizer object
+    data = tokenizer.tokenize(data, return_str=True)
+
+    # Remove characters that are not lowercase letters, numbers, or whitespaces
+    data = re.sub(r"[^a-z0-9\s]", "", data)
+
+    # Remove single-digit numbers surrounded by spaces
+    data = re.sub(r"\s\d{1}\s", "", data)
     
-    tokenizer = nltk.tokenize.ToktokTokenizer()
-    
-    text_data = tokenizer.tokenize(text_data, return_str=True)
+    # Return the processed data
+    return data
 
-    text_data = re.sub(r"[^a-z0-9\s]", "", text_data)
+def stem(data):
+    """
+    Apply stemming to the input text data using the Porter Stemmer algorithm.
 
-    text_data = re.sub(r"\s\d{1}\s", "", text_data)
-    
-    return text_data
+    Args:
+        data (str): The input text data to be stemmed.
 
-
-
-# defined function used to stem text in data and joins them with spaces as a string value
-def stem(text_data):
-    
+    Returns:
+        str: The stemmed text data after applying stemming to each word.
+    """
+    # Create an instance of the PorterStemmer class from the nltk library
     ps = nltk.porter.PorterStemmer()
-
-    stems = [ps.stem(word) for word in text_data.split()]
     
-    text_data_stemmed = ' '.join(stems)
+    # Split the input data into a list of words
+    words = data.split()
     
-    return text_data_stemmed 
+    # Apply stemming to each word in the input data
+    stems = [ps.stem(word) for word in words]
 
+    # Join the stemmed words into a single string with spaces in between
+    stemmed_data = ' '.join(stems)
 
+    # Return the stemmed data
+    return stemmed_data
 
+def lemmatize(data):
+    """
+    Apply lemmatization to the input text data using WordNet Lemmatizer.
 
-# defined function to lemmatize text in data and return the text as a string in a sentence with "lemmas"
-def lemmatize(string):
+    Args:
+        data (str): The input text data to be lemmatized.
 
+    Returns:
+        str: The lemmatized text data after applying lemmatization to each word.
+    """
+    # Create an instance of WordNetLemmatizer
     wnl = nltk.stem.WordNetLemmatizer()
-
-    lemmas = [wnl.lemmatize(word) for word in string.split()]
     
-    string = ' '.join(lemmas)
+    # Split the input data into a list of words
+    words = data.split()
+    
+    # Lemmatize each word in the input data
+    lemmas = [wnl.lemmatize(word) for word in words]
 
-    return string
+    # Join the lemmatized words into a single string
+    lemmatized_data = ' '.join(lemmas)
+
+    # Return the lemmatized data
+    return lemmatized_data
 
 
+def remove_stopwords(data, extra_words=[], exclude_words=[]):
+    """
+    Remove stopwords from the input text data while allowing for additional and exclusionary stopwords.
 
-def remove_stopwords(text_data, extra_words=None, exclude_words=None):
-    # stopwords list
+    Args:
+        data (str): The input text data from which stopwords will be removed.
+        extra_words (list): Additional stopwords to be considered.
+        exclude_words (list): Words to be excluded from the list of stopwords.
+
+    Returns:
+        str: The text data with stopwords removed based on the provided lists.
+    """
+    # Create a list of stopwords in English
     stopwords_list = stopwords.words('english')
 
-    # If extra_words are provided, add them to the stopwords_list
-    if extra_words:
-        stopwords_list.extend(extra_words)
+    # Extend the stopwords_list with the elements from the extra_words list
+    stopwords_list.extend(extra_words)
 
-    # If exclude_words are provided, remove them from the stopwords_list
-    if exclude_words:
-        stopwords_list = [word for word in stopwords_list if word not in exclude_words]
+    # Iterate over each word in the exclude_words list
+    for word in exclude_words:
+        # Check if the word exists in the stopwords_list
+        if word in stopwords_list:
+            # Remove the word from the stopwords_list
+            stopwords_list.remove(word)
 
-    # Tokenize the text data and remove stopwords
-    words = [word for word in text_data.split() if word not in stopwords_list]
-
-    # Join the words back 
-    new_text_data = ' '.join(words)
-
-    return new_text_data
-
-# extra_words = ["framework", "with"]
-# exclude_words = ["can"]
-
-# result = remove_stopwords(data, extra_words, exclude_words)
-# print(result)
-
-STOPWORDS = ['ro']
-
-def clean(text):
-    'A simple function to cleanup text data'
-    wnl = nltk.stem.WordNetLemmatizer()
-    stopwords = nltk.corpus.stopwords.words('english') + STOPWORDS
-    text = (unicodedata.normalize('NFKD', text)
-             .encode('ascii', 'ignore')
-             .decode('utf-8', 'ignore')
-             .lower())
-    words = re.sub(r'[^\w\s]', '', text).split()
-    return [wnl.lemmatize(word) for word in words if word not in stopwords]
-
-
-
-# defined function to accomplish preparation of text data
-def prep_text_data(df, column, extra_words=[], exclude_words=[]):
-    # Create a copy of the DataFrame to avoid modifying the original
-    df_copy = df.copy()
+    # Split the input data into individual words and filter out stopwords
+    words = [word for word in data.split() if word not in stopwords_list]
     
-    # Apply text preparation functions to the specified column
-    df_copy['clean_readme'] = df_copy[column].apply(basic_clean)\
-                            .apply(tokenize)\
-                            .apply(remove_stopwords,
-                                  extra_words=extra_words,
-                                  exclude_words=exclude_words)
+    # Join the filtered words back into a string
+    data = ' '.join(words)
     
-    df_copy['stemmed'] = df_copy['clean_readme'].apply(stem)
-    df_copy['lemmatized'] = df_copy['clean_readme'].apply(lemmatize)
-    
-    return df_copy
+    # Return the processed data
+    return data
 
-# prep_text_data(news_df, 'original', extra_words = ['ha'], exclude_words = ['no']).head()
+
+
+def preprocess_readme_column(df, extra_words=[], exclude_words=[], method='stem'):
+    """
+    Preprocess the 'readme' column of a DataFrame by applying text cleaning and processing steps.
+    
+    Args:
+        df (pd.DataFrame): The DataFrame to preprocess.
+        extra_words (list): Additional words to include in stopwords removal.
+        exclude_words (list): Words to exclude from stopwords removal.
+        method (str): Text processing method ('stem' or 'lemmatize').
+
+    Returns:
+        None: The function modifies the DataFrame 'df' in place.
+    """
+    # Apply basic cleaning and tokenization to 'readme_contents' column
+    df['readme'] = df['readme_contents'].apply(basic_clean).apply(tokenize)
+    
+    # Drop the 'readme_contents' column
+    df.drop(columns='readme_contents', axis=1, inplace=True)
+    
+    # # Apply stopwords removal and text processing based on the selected method
+    # df['readme'] = df['readme'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
+    
+    if method == 'stem':
+        # Apply stemming to the 'readme' column
+        df['readme'] = df['readme'].apply(stem)
+    elif method == 'lemmatize':
+        # Apply lemmatization to the 'readme' column
+        df['readme'] = df['readme'].apply(lemmatize)
+    
+    # Apply stopwords removal and text processing based on the selected method
+    df['readme'] = df['readme'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
+    
+    return df
+
+def remove_invalid_rows(df):
+    """
+    Remove rows from a DataFrame where 'language' is None and 'readme' is 'failtoloadreadme'.
+    
+    Args:
+        df (pd.DataFrame): The DataFrame to remove rows from.
+
+    Returns:
+        None: The function modifies the DataFrame 'df' in place.
+    """
+    # Remove rows where 'language' is None
+    df = df[df['language'].notna()]
+    
+    # Remove rows where 'readme' is 'failtoloadreadme'
+    df = df[df['readme'] != 'failtoloadreadme']
+    
+    return df
+
+
+def remove_non_languages(df, non_languages):
+    """
+    Remove rows from a DataFrame where the specified column contains any of the given items.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to remove rows from.
+        non_languages (list): A list of non-language items to check for and remove if found.
+
+    Returns:
+        pd.DataFrame: The DataFrame with rows removed based on the specified non-language items.
+    """
+    return df[~df['language'].isin(non_languages)]
+
+def categorize_language(language, labeled_languages):
+    """
+    Categorize a given language into one of the specified categories or 'Other' if it doesn't match any.
+
+    Args:
+        language (str): The language to be categorized.
+        labeled_languages (list): List of acceptable languages for categorization.
+
+    Returns:
+        str: The categorized language, which is either one of the acceptable languages or 'Other'.
+    """
+    if language in labeled_languages:
+        return language
+    else:
+        return 'Other'
+    
+
+def add_bigrams(data):
+    data.str.split(expand=True).stack()
+
+
+def process_dataframe(df, extra_words=[], exclude_words=[], method='stem', labeled_languages=[], non_languages=[]):
+    """
+    Process a DataFrame by applying text preprocessing, filtering, and language categorization operations.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to process.
+        extra_words (list): Additional words to include in stopwords removal.
+        exclude_words (list): Words to exclude from stopwords removal.
+        method (str): Text processing method ('stem' or 'lemmatize').
+        labeled_languages (list): List of acceptable languages.
+        non_languages (list): List of non-language items to be removed from the DataFrame.
+
+    Returns:
+        pd.DataFrame: The processed DataFrame with rows removed based on non-language items.
+    """
+    # Preprocess the 'readme' column
+    df = preprocess_readme_column(df, extra_words, exclude_words, method)
+    
+    # Remove rows with invalid data
+    df = remove_invalid_rows(df)
+    
+    # Remove rows with non-language items
+    df = remove_non_languages(df, non_languages)
+    
+    # Categorize the 'language' column based on labeled_languages
+    df['language'] = df['language'].apply(categorize_language, args=(labeled_languages,))
+    
+    df = df[df['readme'].notna() & df['readme'].str.contains(' ')]
+    
+    return df
