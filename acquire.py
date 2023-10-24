@@ -10,6 +10,7 @@ import os
 import json
 from typing import Dict, List, Optional, Union, cast
 import requests
+import pandas as pd
 
 from env import github_token, github_username
 
@@ -100,6 +101,15 @@ def scrape_github_data() -> List[Dict[str, str]]:
     Loop through all of the repos and process them. Returns the processed data.
     """
     return [process_repo(repo) for repo in REPOS]
+
+
+# Load the prepared DataFrame
+repos_df =  pd.read_csv('processed_repos.csv', index_col= 0)
+
+# Load the prepared DataFrame
+def text_data():
+
+    return repos_df
 
 
 if __name__ == "__main__":
