@@ -27,37 +27,37 @@ def join_text(df):
             - all_repos (str): Concatenated text from the entire DataFrame.
     """
     # Join all the text from the DataFrame where the label is 'C++'
-    cpp_repos = ' '.join(df[df.language == 'C++'].readme)
+    cpp_repos = ' '.join(df[df.language == 'C++'].text)
 
     # Join all the text from the DataFrame where the label is 'Python'
-    python_repos = ' '.join(df[df.language == 'Python'].readme)
+    python_repos = ' '.join(df[df.language == 'Python'].text)
 
     # Join all the text from the DataFrame where the label is 'Other'
-    other_repos = ' '.join(df[df.language == 'Other'].readme)
+    other_repos = ' '.join(df[df.language == 'Other'].text)
 
     # Join all the text from the entire DataFrame
-    all_repos = ' '.join(df.readme)
+    all_repos = ' '.join(df.text)
     
     return cpp_repos, python_repos, other_repos, all_repos
 
 def list_words(df):
     """
-    Create lists of words from the 'readme' column of a DataFrame based on language labels and for all data.
+    Create lists of words from the 'text' column of a DataFrame based on language labels and for all data.
 
     Args:
-        df (pd.DataFrame): The DataFrame containing 'readme' text data and language labels.
+        df (pd.DataFrame): The DataFrame containing 'text' text data and language labels.
 
     Returns:
         tuple: A tuple containing the following lists of words:
-            - cpp_words (pd.Series): Words from the 'readme' column for 'C++' labeled repositories.
-            - python_words (pd.Series): Words from the 'readme' column for 'Python' labeled repositories.
-            - other_words (pd.Series): Words from the 'readme' column for 'Other' labeled repositories.
-            - all_words (pd.Series): Words from the 'readme' column for all repositories.
+            - cpp_words (pd.Series): Words from the 'text' column for 'C++' labeled repositories.
+            - python_words (pd.Series): Words from the 'text' column for 'Python' labeled repositories.
+            - other_words (pd.Series): Words from the 'text' column for 'Other' labeled repositories.
+            - all_words (pd.Series): Words from the 'text' column for all repositories.
     """
-    cpp_words = df[df.language == 'C++'].readme.str.split(expand=True).stack()
-    python_words = df[df.language == 'Python'].readme.str.split(expand=True).stack()
-    other_words = df[df.language == 'Other'].readme.str.split(expand=True).stack()
-    all_words = df.readme.str.split(expand=True).stack()
+    cpp_words = df[df.language == 'C++'].text.str.split(expand=True).stack()
+    python_words = df[df.language == 'Python'].text.str.split(expand=True).stack()
+    other_words = df[df.language == 'Other'].text.str.split(expand=True).stack()
+    all_words = df.text.str.split(expand=True).stack()
     
     return cpp_words, python_words, other_words, all_words
 
@@ -66,7 +66,7 @@ def word_freq(df):
     Calculate word frequencies for different language labels and for all data in a DataFrame.
 
     Args:
-        df (pd.DataFrame): The DataFrame containing 'readme' text data and language labels.
+        df (pd.DataFrame): The DataFrame containing 'text' text data and language labels.
 
     Returns:
         tuple: A tuple containing the following word frequency Series:
