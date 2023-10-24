@@ -14,7 +14,34 @@ from sklearn.preprocessing import LabelEncoder
 from scipy.sparse import hstack
 
 from sklearn.metrics import classification_report as class_rep
-from prepare import clean, lemmatize
+
+def baseline():
+
+    # Load and preprocess your data
+    repos_df = pd.read_csv('processed_repos.csv', index_col=0)
+    repos_df.drop(columns=(['repo', 'bigrams', 'trigrams']))
+    repos_df = repos_df.dropna()
+    
+    X = repos_df.text
+    y = repos_df.language
+    
+    # Split the data into training, validation, and test sets
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, train_size=0.7, random_state=42)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    
+    tfidf = TfidfVectorizer()
+    X_train_tfidf = tfidf.fit_transform(X_train)
+    X_val_tfidf = tfidf.transform(X_val)
+    X_test_tfidf = tfidf.transform(X_test)
+
+    train_baseline_acc = y_train.value_counts().max() / y_train.shape[0] * 100    
+    val_baseline_acc = y_val.value_counts().max() / y_val.shape[0] * 100
+
+    print(f'\nBaseline Accuracy')
+    print(f'==================================================')
+    print(f'\n\nTrain baseline accuracy: {round(train_baseline_acc)}%\n')
+    print(f'\nValidation baseline accuracy: {round(val_baseline_acc)}%\n')
+
 
 def model_1():
     # Load and preprocess your data
@@ -53,7 +80,7 @@ def model_1():
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
 
-    print(f'\n\nLogisitic Regression Model (Hyperparameters Used)')
+    print(f'\nLogisitic Regression Model (Hyperparameters Used)')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
@@ -96,7 +123,7 @@ def model_2():
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
 
-    print(f'\n\nKNearest Neighbors (Hyperparameters Used)')
+    print(f'\nKNearest Neighbors (Hyperparameters Used)')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
@@ -144,7 +171,7 @@ def model_3():
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
 
-    print(f'\n\nXGBClassifier Model (Hyperparameters Used)')
+    print(f'\nXGBClassifier Model (Hyperparameters Used)')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
@@ -183,13 +210,16 @@ def model_4():
 
     # Calculate accuracy scores
     y_train_res = pd.DataFrame({'actual': y_train, 'preds': lm.predict(X_train_tfidf)})
+    y_val_res = pd.DataFrame({'actual': y_val, 'preds': lm.predict(X_val_tfidf)})
     y_test_res = pd.DataFrame({'actual': y_test, 'preds': lm.predict(X_test_tfidf)})
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
+    val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
     test_accuracy = accuracy_score(y_test_res['actual'], y_test_res['preds'])
 
-    print(f'\n\nFinal Model Logisitic Regression with Hyperparameter tuning')
+    print(f'\nFinal Model Logisitic Regression with Hyperparameter tuning')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
-    print(f'\nValidation Accuracy: {test_accuracy:.2f}\n')
+    print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
+    print(f'\nTest Accuracy: {test_accuracy:.2f}\n')
     
     
