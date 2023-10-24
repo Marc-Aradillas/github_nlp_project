@@ -113,7 +113,3 @@ My initial hypothesis is that text data that are associated with programming, to
   - We could retrieve more data and approach our web scrapping methods using other technologies.
     - The url location was using the website filter option and we could possibily remove that and use stars as a feature to improve results
   - Fine-tune model parameters for better performance.
-
-
->  In this NLP project
-
