@@ -1,5 +1,7 @@
 import pandas as pd
 import nltk
+from scipy.stats import chi2_contingency
+import visual as v
 
 def counts_and_ratios(df, column):
     """
@@ -171,8 +173,6 @@ def word_counts(df, reset_index=True):
     return word_counts
 
 
-
-
 def get_top_n_ngrams(series, num_words, top_n, remove_delimiter=False):
     """
     Get the top N n-grams from a Series of text data.
@@ -202,3 +202,93 @@ def get_top_n_ngrams(series, num_words, top_n, remove_delimiter=False):
     top_ngrams.index = [' '.join(ngram) for ngram in top_ngrams.index]
 
     return top_ngrams
+
+
+def perform_chi_square_test(dataframe, alpha=0.05):
+    """
+    Perform the Chi-square test on the provided DataFrame and print the result.
+
+    Args:
+    dataframe (pd.DataFrame): A DataFrame containing word frequencies across different categories.
+    alpha (float): Significance level for the Chi-square test. Default is 0.05.
+
+    Returns:
+    None
+    """
+    # Extracting the word frequency data, assuming the first column is 'word' and should be excluded
+    contingency_data = dataframe.iloc[:, 1:].values
+
+    # Perform Chi-square test
+    chi2, p, dof, expected = chi2_contingency(contingency_data)
+
+    # Print the results
+    print(f"Chi-square Statistic: {chi2}")
+    print(f"p-value: {p}")
+    # print(f"Degrees of Freedom: {dof}")
+
+    # Decision: compare p-value with alpha
+    if p < alpha:
+        print("We reject the null hypothesis.")
+    else:
+        print("We fail to reject the null hypothesis.")
+
+
+def q1_vis_test(df, alpha=0.05):
+    word_count = word_counts(df, reset_index=False)
+    top_word_count = word_count.head(10)
+    v.plot_top_words(word_count, column='all', top_n=10, figsize=(10, 6))
+    perform_chi_square_test(top_word_count, alpha)
+
+def q2_chi_test(contingency_table, alpha=0.05):
+    """
+    Perform the Chi-square test of independence on the provided contingency table.
+
+    Args:
+    contingency_table (np.array or list of lists): 2D array with the format shown above.
+    alpha (float): Significance level for the test. Default is 0.05.
+
+    Returns:
+    None
+    """
+    # Perform Chi-square test
+    chi2, p, dof, expected = chi2_contingency(contingency_table)
+
+    # Results
+    print(f'Chi-square Statistic: {chi2}')
+    print(f'P-value: {p}')
+    # print(f'Degrees of Freedom: {dof}')
+    # print('Expected Frequencies:')
+    print(expected)
+    
+def q2_cont_table(df):
+    
+    word_count = word_counts(df, reset_index=True)
+    
+    # Step 1: Extract counts for "build"
+    build_counts = word_count[word_count['word'] == 'build'][['C++', 'Python', 'Other']].iloc[0]
+
+    # Step 2: Calculate total counts
+    total_counts = word_count[['C++', 'Python', 'Other']].sum()
+
+    # Step 3: Calculate counts for "does not contain 'build'"
+    not_build_counts = total_counts - build_counts
+
+    # Step 4: Structure the contingency table
+    contingency_table = pd.DataFrame([build_counts, not_build_counts], index=['contains_build', 'not_contains_build'])
+    return contingency_table
+
+def q2_vis_test(df, alpha=0.05):
+    word_count = word_counts(df, reset_index=False)
+    contingency_table = q2_cont_table(df)
+    v.plot_top_words(word_count, column='C++', top_n=10, figsize=(10, 6), title= 'The 10 most common words in C++ repos and their ratios')
+    perform_chi_square_test(contingency_table, alpha)
+
+def vis_4(df, title):
+    cpp_words, python_words, other_words, all_words = list_words(df)
+    top_20_python_bigrams = get_top_n_ngrams(python_words, 2, top_n= 10, remove_delimiter=True)
+    v.plot_ngrams(top_20_python_bigrams, top_n=10, figsize=(12, 10), title=title)
+
+def vis_5(df, title):
+    cpp_words, python_words, other_words, all_words = list_words(df)
+    top_20_cpp_trigrams = get_top_n_ngrams(cpp_words, 3, top_n= 10, remove_delimiter=True)
+    v.plot_ngrams(top_20_cpp_trigrams, top_n=10, figsize=(12, 10), title=title)

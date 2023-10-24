@@ -191,7 +191,7 @@ def plot_ngrams(word_counts, top_n=20, figsize=(12, 10), title=None):
 
     # Set plot title with larger font size
     if title is None:  # Check if a custom title is provided
-        title = f'Top {top_n} Words'
+        title = f'Top {top_n} n_grams'
     
     plt.title(title, fontsize=16)
 
