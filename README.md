@@ -96,21 +96,23 @@ My initial hypothesis is that text data that are associated with programming, to
 
 ## Takeaways and Key Findings
 
-- 
-
+- The words in the readme texts have alot of words that can be considered noise because of it's equal dsitribution for each language type.
+- There bigrams and trigrams displayed more noise and opportunity to conduct more cleaning actions to possibily impprove model by including those engineered features.
+- The topic of robotics across popular repos shows that Python and C++ werethe most popula languages used in the data retreived.
+- The langauge feature contained alot of technologies and not actual programming languages which can skew the data displayed.
 
 ## Model Improvement
-- 
+- The model could include those unused feature engineered columns to evaluate model performance changes.
 
 ## Recommendations and Next Steps
 
-- I would recommend
+- We recommend revisiting the labeling of the programming langauges for each repository as they are not storing accurate information. We understand that there are debates on what is and is not considere a "real programming' language, but there is a distinction on what technologies are being used specifically and it should be easy to understand that when looking at the tech stack of repositories on GitHub.
 
-  
 - Given more time, the following actions could be considered:
   - Gather more data to improve model performance.
-  - Revisit the data exploration phase to gain a more comprehensive dataset.
-    - 
+  - We could retrieve more data and approach our web scrapping methods using other technologies.
+    - The url location was using the website filter option and we could possibily remove that and use stars as a feature to improve results
+  - Fine-tune model parameters for better performance.
 
 
 >  In this NLP project
