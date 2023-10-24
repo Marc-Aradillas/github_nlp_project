@@ -39,14 +39,15 @@ My initial hypothesis is that text data that are associated with programming, to
 * Prepare data using Regex and the BeautifulSoup Library. 
 * Explore data in search of which words, bigramsm and trigrams are usefull.
   * Answer the following initial questions
-	* Does categorizing langauges by Python? 
-  * ?
- 	* ?  
- 	* ?
+	* What are the top 10 words for any language?
+    * Is there a significant difference in the frequency of the top 10 words used in repository readme among different languages?
+    * Is there a significant association between the programming language and the likelihood that readme contains the word "build"?
+    * What are the top ten bigrams for python?
+    * What are the top 10 trigrams for C++?
 * Develop a Model to predict repository main programming language
   * Use text data identified in explore to help build predictive models of different types
   * Evaluate models on train and validate data
-  * Select the best model based on $RMSE$ and $R^2$
+  * Select the best model based on Accuracy Score
   * Evaluate the best model on test data
 * Draw conclusions
 
@@ -54,8 +55,8 @@ My initial hypothesis is that text data that are associated with programming, to
 
 | **Feature**        | **Data Type** | **Definition**                                       |
 |--------------------|---------------|-----------------------------------------------------|
-| `language`        | strings         | The opening stock price of TSLA on a given date.    |
-| `readme_`        | strings         | The highest stock price of TSLA during the day.    |
+| `language`        | string         |   The programming language for repo            | 
+| `text`        | strings        | The readme files containing the text for repo    |
 
 
 
@@ -65,15 +66,15 @@ My initial hypothesis is that text data that are associated with programming, to
 
 2. Install project dependencies by running pip install -r requirements.txt in your project directory.
 
-3. Obtain an API key from the Alpha Vantage website.
+3. Obtain an API key from the GitHub website.
 
 4. Create a config.py file in your project directory with your API key using the following format:
 
-> GITUB_API = "YOUR_API_KEY"
+> GITUB_API = "GITHUB_API_TOKEN"
  
 5. Ensure that config.py is added to your .gitignore file to protect your API key.
 
-6. Run the acquire.py script to fetch stock data from the Alpha Vantage API:
+6. Run the acquire.py script to fetch stock data from the GitHU API:
 
 > python acquire.py
 
