@@ -292,3 +292,11 @@ def vis_5(df, title):
     cpp_words, python_words, other_words, all_words = list_words(df)
     top_20_cpp_trigrams = get_top_n_ngrams(cpp_words, 3, top_n= 10, remove_delimiter=True)
     v.plot_ngrams(top_20_cpp_trigrams, top_n=10, figsize=(12, 10), title=title)
+
+
+def vis_1(df):
+    # Counts and ratios of language labels in a DataFrame
+    counts = counts_and_ratios(df, "language")
+
+    # Visualize the distribution
+    v.plot_language_distribution(counts)
