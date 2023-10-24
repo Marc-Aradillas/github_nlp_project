@@ -227,8 +227,8 @@ def plot_language_distribution(df):
     bars = plt.bar(df.index, df['n'], color='#1f77b4', edgecolor='black')
     
     # Set labels and title
-    plt.xlabel('Programming Language', labelpad=20)
-    plt.title('Distribution of Programming Languages', pad=20)
+    plt.xlabel('Programming Language', labelpad=20, fontsize=16)
+    plt.title('Distribution of Programming Languages', pad=20, fontsize=20)
     
     # Get the current axes
     ax = plt.gca()
@@ -248,10 +248,10 @@ def plot_language_distribution(df):
     for bar in bars:
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width() / 2, height + 0.1, int(height),
-                ha='center', va='bottom')
+                ha='center', va='bottom', fontsize=18)
     
     # Rotates the x-axis labels for better readability, depending on the number of categories
-    plt.xticks(rotation=0, ha="right", rotation_mode="anchor")  # 'ha' is short for 'horizontal alignment'
+    plt.xticks(rotation=0, ha="right", rotation_mode="anchor", fontsize=16)  # 'ha' is short for 'horizontal alignment'
     
     plt.tight_layout()
     
