@@ -37,7 +37,7 @@ def baseline():
     train_baseline_acc = y_train.value_counts().max() / y_train.shape[0] * 100    
     val_baseline_acc = y_val.value_counts().max() / y_val.shape[0] * 100
 
-    print(f'\n\nBaseline Accuracy')
+    print(f'\nBaseline Accuracy')
     print(f'==================================================')
     print(f'\n\nTrain baseline accuracy: {round(train_baseline_acc)}%\n')
     print(f'\nValidation baseline accuracy: {round(val_baseline_acc)}%\n')
@@ -80,7 +80,7 @@ def model_1():
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
 
-    print(f'\n\nLogisitic Regression Model (Hyperparameters Used)')
+    print(f'\nLogisitic Regression Model (Hyperparameters Used)')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
@@ -123,7 +123,7 @@ def model_2():
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
 
-    print(f'\n\nKNearest Neighbors (Hyperparameters Used)')
+    print(f'\nKNearest Neighbors (Hyperparameters Used)')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
@@ -171,7 +171,7 @@ def model_3():
     train_accuracy = accuracy_score(y_train_res['actual'], y_train_res['preds'])
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
 
-    print(f'\n\nXGBClassifier Model (Hyperparameters Used)')
+    print(f'\nXGBClassifier Model (Hyperparameters Used)')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
@@ -216,7 +216,7 @@ def model_4():
     val_accuracy = accuracy_score(y_val_res['actual'], y_val_res['preds'])
     test_accuracy = accuracy_score(y_test_res['actual'], y_test_res['preds'])
 
-    print(f'\n\nFinal Model Logisitic Regression with Hyperparameter tuning')
+    print(f'\nFinal Model Logisitic Regression with Hyperparameter tuning')
     print(f'==================================================')
     print(f'\nTrain Accuracy: {train_accuracy:.2f}\n')
     print(f'\nValidation Accuracy: {val_accuracy:.2f}\n')
