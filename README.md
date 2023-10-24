@@ -15,7 +15,11 @@
 
 # **Project: NLP-Based GitHub Language Predictor**
 
+<<<<<<< HEAD
 ![image](https://repository-images.githubusercontent.com/289382429/e9c6ec80-8902-11eb-9f55-5de819da8bf5)
+=======
+![image](https://github.com/Marc-Aradillas/github_nlp_project/assets/106922826/07700123-d2cd-4b4a-bb1f-e4eef81f215f)
+>>>>>>> 89c9dccaa4293c4fe3a4aa1757aa537e9aa1e435
 
 #### The core aim of this project is to automate the process of identifying the primary programming language used in a repository. We achieve this by implementing a machine learning model that analyzes the README text.
 
