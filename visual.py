@@ -1,7 +1,9 @@
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick  # This line is important
 import pandas as pd
 import explore as exp
+
 
 def plot_top_words(word_counts, column='all', top_n=20, figsize=(12, 10), title=None):
     """
@@ -206,4 +208,52 @@ def plot_ngrams(word_counts, top_n=20, figsize=(12, 10), title=None):
 
     # Show the plot
     plt.tight_layout()
+    plt.show()
+    
+
+def plot_language_distribution(df):
+    """
+    Create a bar chart to visualize the count of programming languages in a DataFrame.
+
+    Parameters:
+        df (pd.DataFrame): The DataFrame containing programming language data to be plotted.
+
+    Returns:
+        None
+    """
+    plt.figure(figsize=(10, 6))
+    
+    # Create a bar chart with 'n' values
+    bars = plt.bar(df.index, df['n'], color='#1f77b4', edgecolor='black')
+    
+    # Set labels and title
+    plt.xlabel('Programming Language', labelpad=20)
+    plt.title('Distribution of Programming Languages', pad=20)
+    
+    # Get the current axes
+    ax = plt.gca()
+    
+    # Remove the top, right, and left spines for a cleaner appearance
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)  # This line removes the y-axis.
+    
+    # Hide the y-axis labels
+    ax.yaxis.set_visible(False)
+    
+    # Remove tick marks on the x-axis
+    ax.tick_params(axis='x', length=0)  # This line removes the tick marks but keeps the labels.
+    
+    # Add values on top of the bars
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height + 0.1, int(height),
+                ha='center', va='bottom')
+    
+    # Rotates the x-axis labels for better readability, depending on the number of categories
+    plt.xticks(rotation=0, ha="right", rotation_mode="anchor")  # 'ha' is short for 'horizontal alignment'
+    
+    plt.tight_layout()
+    
+    # Show the plot
     plt.show()
