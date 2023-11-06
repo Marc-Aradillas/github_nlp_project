@@ -185,10 +185,10 @@ def preprocess_text_column(df, extra_words=[], exclude_words=[], method='stem'):
         None: The function modifies the DataFrame 'df' in place.
     """
     # Apply basic cleaning and tokenization to 'text_contents' column
-    df['text'] = df['text_contents'].apply(basic_clean).apply(tokenize)
+    df['text'] = df['readme_contents'].apply(basic_clean).apply(tokenize)
     
     # Drop the 'text_contents' column
-    df.drop(columns='text_contents', axis=1, inplace=True)
+    df.drop(columns='readme_contents', axis=1, inplace=True)
     
     # # Apply stopwords removal and text processing based on the selected method
     # df['text'] = df['text'].apply(lambda x: remove_stopwords(x, extra_words, exclude_words))
